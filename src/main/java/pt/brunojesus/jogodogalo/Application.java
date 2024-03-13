@@ -9,6 +9,7 @@ public class Application {
 		board.play(0, 1, BoardItemEnum.CIRCLE);
 		board.play(1, 1, BoardItemEnum.CROSS);
 		board.play(2, 2, BoardItemEnum.CROSS);
+		board.play(2, 2, BoardItemEnum.CIRCLE);
 		
 		board.print();
 	}

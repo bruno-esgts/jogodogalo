@@ -11,7 +11,9 @@ public class Board {
 	}
 	
 	public void play(int x, int y, BoardItemEnum item) {
-		this.board[y][x] = item;
+		if (this.board[y][x] == null) {
+			this.board[y][x] = item;
+		}
 	}
 	
 	public void print() {
