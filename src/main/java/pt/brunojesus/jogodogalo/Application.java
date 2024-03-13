@@ -2,7 +2,7 @@ package pt.brunojesus.jogodogalo;
 
 public class Application {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws PositionAlreadyInUseException {
 		
 		Board board = new Board(3);
 		board.play(0, 0, BoardItemEnum.CROSS);

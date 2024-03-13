@@ -10,10 +10,11 @@ public class Board {
 		this.board = new BoardItemEnum[size][size];
 	}
 	
-	public void play(int x, int y, BoardItemEnum item) {
-		if (this.board[y][x] == null) {
-			this.board[y][x] = item;
+	public void play(int x, int y, BoardItemEnum item) throws PositionAlreadyInUseException {
+		if (this.board[y][x] != null) {
+			throw new PositionAlreadyInUseException("This place already has an item");
 		}
+		this.board[y][x] = item;
 	}
 	
 	public void print() {
