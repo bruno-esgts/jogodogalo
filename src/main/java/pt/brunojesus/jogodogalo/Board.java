@@ -30,6 +30,26 @@ public class Board {
 		}
 		this.board[y][x] = item;
 		this.lastPlayedItem = item;
+		
+		BoardItemEnum winner = checkLineWinner(y);
+		if (winner != null) {
+			System.out.println("Winner is: " + winner.getSymbol());
+		}
+	}
+	
+	public BoardItemEnum checkLineWinner(int y) {
+		BoardItemEnum item = this.board[y][0];
+		if (item == null) {
+			return null;
+		}
+		
+		for (int i = 1; i < this.size; i++) {
+			if (this.board[y][i] != item) {
+				return null;
+			}
+		}
+				
+		return item;
 	}
 
 	public void print() {
