@@ -6,6 +6,8 @@ public class Board {
 	private BoardItemEnum[][] board;
 	private Integer size;
 	private BoardItemEnum lastPlayedItem = null;
+	private BoardItemEnum winner = null;
+	
 
 	public Board(int size) {
 		this.size = size;
@@ -19,6 +21,9 @@ public class Board {
 	}
 
 	public void play(int x, int y, BoardItemEnum item) throws IllegalPlayException {
+		if (winner != null) {
+			throw new GameAlreadyFinishedException("There's already a winner: " + winner.getSymbol());
+		}
 		if (x >= this.size || y >= this.size || x < 0 || y < 0) {
 			throw new IllegalBoardPositionException("Illegal position");
 		}
@@ -31,12 +36,12 @@ public class Board {
 		this.board[y][x] = item;
 		this.lastPlayedItem = item;
 		
-		BoardItemEnum winner = checkLineWinner(y);
+		winner = checkLineWinner(y);
 		if (winner != null) {
 			System.out.println("Line winner is: " + winner.getSymbol());
 			return;
 		}
-		
+				
 		winner = checkColumnWinner(x);
 		if (winner != null) {
 			System.out.println("Column winner is: " + winner.getSymbol());
