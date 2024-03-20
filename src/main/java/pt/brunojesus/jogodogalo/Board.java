@@ -7,7 +7,6 @@ public class Board {
 	private Integer size;
 	private BoardItemEnum lastPlayedItem = null;
 	private BoardItemEnum winner = null;
-	
 
 	public Board(int size) {
 		this.size = size;
@@ -20,7 +19,7 @@ public class Board {
 		play(x, y, item);
 	}
 
-	public void play(int x, int y, BoardItemEnum item) throws IllegalPlayException {
+	public BoardItemEnum play(int x, int y, BoardItemEnum item) throws IllegalPlayException {
 		if (winner != null) {
 			throw new GameAlreadyFinishedException("There's already a winner: " + winner.getSymbol());
 		}
@@ -36,95 +35,84 @@ public class Board {
 		this.board[y][x] = item;
 		this.lastPlayedItem = item;
 		
-		winner = checkLineWinner(y);
-		if (winner != null) {
-			System.out.println("Line winner is: " + winner.getSymbol());
-			return;
-		}
-				
-		winner = checkColumnWinner(x);
-		if (winner != null) {
-			System.out.println("Column winner is: " + winner.getSymbol());
-			return;
+		if (
+				checkLineWinner(y) ||
+				checkColumnWinner(x) ||
+				checkDiagonalWinner(x, y) ||
+				checkInverseDiagonalWinner(x, y)
+		) {
+			return lastPlayedItem;
 		}
 		
-		winner = checkDiagonalWinner(x, y);
-		if (winner != null) {
-			System.out.println("Diagonal winner is: " + winner.getSymbol());
-		}
-		
-		winner = checkInverseDiagonalWinner(x, y);
-		if (winner != null) {
-			System.out.println("Inverse diagonal winner is: " + winner.getSymbol());
-		}
+		return null;
 	}
 	
-	public BoardItemEnum checkLineWinner(int y) {
+	public boolean checkLineWinner(int y) {
 		BoardItemEnum item = this.board[y][0];
 		if (item == null) {
-			return null;
+			return false;
 		}
 		
 		for (int i = 1; i < this.size; i++) {
 			if (this.board[y][i] != item) {
-				return null;
+				return false;
 			}
 		}
 				
-		return item;
+		return true;
 	}
 	
-	public BoardItemEnum checkColumnWinner(int x) {
+	public boolean checkColumnWinner(int x) {
 		BoardItemEnum item = this.board[0][x];
 		if (item == null) {
-			return null;
+			return false;
 		}
 		
 		for (int i = 1; i < this.size; i++) {
 			if (this.board[i][x] != item) {
-				return null;
+				return false;
 			}
 		}
 		
-		return item;
+		return true;
 	}
 	
-	public BoardItemEnum checkDiagonalWinner(int x, int y) {
+	public boolean checkDiagonalWinner(int x, int y) {
 		if (x != y) {
-			return null;
+			return false;
 		}
 
 		BoardItemEnum item = this.board[0][0];
 		if (item == null) {
-			return null;
+			return false;
 		}
 		
 		for (int i = 1; i < this.size; i++) {
 			if (this.board[i][i] != item) {
-				return null;
+				return false;
 			}
 		}
 		
-		return item;
+		return true;
 	}
 	
-	public BoardItemEnum checkInverseDiagonalWinner(int x, int y) {
+	public boolean checkInverseDiagonalWinner(int x, int y) {
 		if (x + y != this.size - 1) {
-			return null;
+			return false;
 		}
 		
 		BoardItemEnum item = this.board[0][this.size -1];
 		if (item == null) {
-			return null;
+			return false;
 		}
 		
 		for (int i = 1; i < this.size; i++) {
 			if (this.board[i][this.size - 1 - i] != item) {
-				return null;
+				return false;
 			}
 		}
 		
-		return item;
+		return true;
 	}
 
 	public void print() {
