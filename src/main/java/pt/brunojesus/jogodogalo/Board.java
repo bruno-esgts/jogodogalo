@@ -33,7 +33,14 @@ public class Board {
 		
 		BoardItemEnum winner = checkLineWinner(y);
 		if (winner != null) {
-			System.out.println("Winner is: " + winner.getSymbol());
+			System.out.println("Line winner is: " + winner.getSymbol());
+			return;
+		}
+		
+		winner = checkColumnWinner(x);
+		if (winner != null) {
+			System.out.println("Column winner is: " + winner.getSymbol());
+			return;
 		}
 	}
 	
@@ -49,6 +56,21 @@ public class Board {
 			}
 		}
 				
+		return item;
+	}
+	
+	public BoardItemEnum checkColumnWinner(int x) {
+		BoardItemEnum item = this.board[0][x];
+		if (item == null) {
+			return null;
+		}
+		
+		for (int i = 1; i < this.size; i++) {
+			if (this.board[i][x] != item) {
+				return null;
+			}
+		}
+		
 		return item;
 	}
 
