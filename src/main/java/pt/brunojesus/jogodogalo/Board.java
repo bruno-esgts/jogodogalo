@@ -47,6 +47,16 @@ public class Board {
 			System.out.println("Column winner is: " + winner.getSymbol());
 			return;
 		}
+		
+		winner = checkDiagonalWinner(x, y);
+		if (winner != null) {
+			System.out.println("Diagonal winner is: " + winner.getSymbol());
+		}
+		
+		winner = checkInverseDiagonalWinner(x, y);
+		if (winner != null) {
+			System.out.println("Inverse diagonal winner is: " + winner.getSymbol());
+		}
 	}
 	
 	public BoardItemEnum checkLineWinner(int y) {
@@ -72,6 +82,44 @@ public class Board {
 		
 		for (int i = 1; i < this.size; i++) {
 			if (this.board[i][x] != item) {
+				return null;
+			}
+		}
+		
+		return item;
+	}
+	
+	public BoardItemEnum checkDiagonalWinner(int x, int y) {
+		if (x != y) {
+			return null;
+		}
+
+		BoardItemEnum item = this.board[0][0];
+		if (item == null) {
+			return null;
+		}
+		
+		for (int i = 1; i < this.size; i++) {
+			if (this.board[i][i] != item) {
+				return null;
+			}
+		}
+		
+		return item;
+	}
+	
+	public BoardItemEnum checkInverseDiagonalWinner(int x, int y) {
+		if (x + y != this.size - 1) {
+			return null;
+		}
+		
+		BoardItemEnum item = this.board[0][this.size -1];
+		if (item == null) {
+			return null;
+		}
+		
+		for (int i = 1; i < this.size; i++) {
+			if (this.board[i][this.size - 1 - i] != item) {
 				return null;
 			}
 		}
