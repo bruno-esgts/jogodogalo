@@ -74,5 +74,29 @@ class BoardTest {
 		assertThrows(IllegalBoardPositionException.class, () -> subject.play(x, y));
 
 	}
+	
+	static Stream<Arguments> legalPositionsProvider() {
+		return Stream.of(
+				Arguments.of(0,0),
+				Arguments.of(0,1),
+				Arguments.of(0,2),
+				Arguments.of(1,0),
+				Arguments.of(1,1),
+				Arguments.of(1,2),
+				Arguments.of(2,0),
+				Arguments.of(2,1),
+				Arguments.of(2,2)
+				);
+	}
+	
+	@ParameterizedTest
+	@MethodSource("legalPositionsProvider")
+	void testPositionAlreadyInUse(int x, int y) throws IllegalPlayException {
+		subject = new Board(3);
+		
+		subject.play(x, y);
+		
+		assertThrows(PositionAlreadyInUseException.class, () -> subject.play(x, y));
+	}
 
 }
