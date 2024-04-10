@@ -10,6 +10,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import pt.brunojesus.jogodogalo.exception.ConsecutivePlayException;
+import pt.brunojesus.jogodogalo.exception.IllegalBoardPositionException;
+import pt.brunojesus.jogodogalo.exception.IllegalPlayException;
+import pt.brunojesus.jogodogalo.exception.PositionAlreadyInUseException;
+
 class BoardTest {
 
 	private Board subject;

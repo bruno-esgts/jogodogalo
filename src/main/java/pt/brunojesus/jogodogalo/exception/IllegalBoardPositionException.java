@@ -1,4 +1,4 @@
-package pt.brunojesus.jogodogalo;
+package pt.brunojesus.jogodogalo.exception;
 
 public class IllegalBoardPositionException extends IllegalPlayException {
 

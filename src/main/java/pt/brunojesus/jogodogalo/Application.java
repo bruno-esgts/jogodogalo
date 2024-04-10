@@ -1,5 +1,7 @@
 package pt.brunojesus.jogodogalo;
 
+import pt.brunojesus.jogodogalo.exception.IllegalPlayException;
+
 public class Application {
 
 	public static void main(String[] args) throws IllegalPlayException {

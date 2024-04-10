@@ -1,5 +1,10 @@
 package pt.brunojesus.jogodogalo;
 
+import pt.brunojesus.jogodogalo.exception.ConsecutivePlayException;
+import pt.brunojesus.jogodogalo.exception.GameAlreadyFinishedException;
+import pt.brunojesus.jogodogalo.exception.IllegalBoardPositionException;
+import pt.brunojesus.jogodogalo.exception.IllegalPlayException;
+import pt.brunojesus.jogodogalo.exception.PositionAlreadyInUseException;
 
 public class Board {
 
