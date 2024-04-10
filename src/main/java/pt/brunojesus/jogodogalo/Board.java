@@ -1,5 +1,12 @@
 package pt.brunojesus.jogodogalo;
 
+import java.util.List;
+
+import pt.brunojesus.jogodogalo.command.winner.CheckColumnWinnerCommand;
+import pt.brunojesus.jogodogalo.command.winner.CheckDiagonalWinnerCommand;
+import pt.brunojesus.jogodogalo.command.winner.CheckInverseDiagonalWinnerCommand;
+import pt.brunojesus.jogodogalo.command.winner.CheckLineWinnerCommand;
+import pt.brunojesus.jogodogalo.command.winner.CheckWinnerCommand;
 import pt.brunojesus.jogodogalo.exception.ConsecutivePlayException;
 import pt.brunojesus.jogodogalo.exception.GameAlreadyFinishedException;
 import pt.brunojesus.jogodogalo.exception.IllegalBoardPositionException;
@@ -12,10 +19,18 @@ public class Board {
 	private Integer size;
 	private BoardItemEnum lastPlayedItem = null;
 	private BoardItemEnum winner = null;
+	private List<CheckWinnerCommand> winnerCheckCommands = null;
 
 	public Board(int size) {
 		this.size = size;
 		this.board = new BoardItemEnum[size][size];
+		
+		this.winnerCheckCommands = List.of(
+				new CheckLineWinnerCommand(),
+				new CheckColumnWinnerCommand(),
+				new CheckDiagonalWinnerCommand(),
+				new CheckInverseDiagonalWinnerCommand()
+		);
 	}
 
 	public void play(int x, int y) throws IllegalPlayException {
@@ -41,93 +56,37 @@ public class Board {
 		this.board[y][x] = item;
 		this.lastPlayedItem = item;
 		
-		if (
-				checkLineWinner(y) ||
-				checkColumnWinner(x) ||
-				checkDiagonalWinner(x, y) ||
-				checkInverseDiagonalWinner(x, y)
-		) {
+		boolean hasWinner = this.winnerCheckCommands.stream()
+			.map((command) -> command.check(x, y, this))
+			.filter((result) -> result == true)
+			.findFirst().isPresent();
+		if (hasWinner) {
 			this.winner = lastPlayedItem;
-			return lastPlayedItem;
 		}
+
+//		Alternativa em Java 7
+//		for (int i = 0; i < this.winnerCheckCommands.size(); i++) {
+//			boolean hasWinner = this.winnerCheckCommands.get(i).check(x, y, this);
+//			if (hasWinner) {
+//				this.winner = lastPlayedItem;
+//				break;
+//			}
+//		}
 		
-		return null;
+
+		return this.winner;
 	}
 	
 	public BoardItemEnum getItemInPosition(int x, int y) {
 		return this.board[y][x];
 	}
 	
-	public boolean checkLineWinner(int y) {
-		BoardItemEnum item = this.board[y][0];
-		if (item == null) {
-			return false;
-		}
-		
-		for (int i = 1; i < this.size; i++) {
-			if (this.board[y][i] != item) {
-				return false;
-			}
-		}
-				
-		return true;
-	}
-	
-	public boolean checkColumnWinner(int x) {
-		BoardItemEnum item = this.board[0][x];
-		if (item == null) {
-			return false;
-		}
-		
-		for (int i = 1; i < this.size; i++) {
-			if (this.board[i][x] != item) {
-				return false;
-			}
-		}
-		
-		return true;
-	}
-	
-	public boolean checkDiagonalWinner(int x, int y) {
-		if (x != y) {
-			return false;
-		}
-
-		BoardItemEnum item = this.board[0][0];
-		if (item == null) {
-			return false;
-		}
-		
-		for (int i = 1; i < this.size; i++) {
-			if (this.board[i][i] != item) {
-				return false;
-			}
-		}
-		
-		return true;
-	}
-	
-	public boolean checkInverseDiagonalWinner(int x, int y) {
-		if (x + y != this.size - 1) {
-			return false;
-		}
-		
-		BoardItemEnum item = this.board[0][this.size -1];
-		if (item == null) {
-			return false;
-		}
-		
-		for (int i = 1; i < this.size; i++) {
-			if (this.board[i][this.size - 1 - i] != item) {
-				return false;
-			}
-		}
-		
-		return true;
-	}
-	
 	public BoardItemEnum getWinner() {
 		return winner;
+	}
+	
+	public int getSize() {
+		return size;
 	}
 
 	public void print() {
