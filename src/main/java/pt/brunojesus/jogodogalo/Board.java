@@ -1,6 +1,8 @@
 package pt.brunojesus.jogodogalo;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import pt.brunojesus.jogodogalo.command.winner.CheckColumnWinnerCommand;
 import pt.brunojesus.jogodogalo.command.winner.CheckDiagonalWinnerCommand;
@@ -8,10 +10,11 @@ import pt.brunojesus.jogodogalo.command.winner.CheckInverseDiagonalWinnerCommand
 import pt.brunojesus.jogodogalo.command.winner.CheckLineWinnerCommand;
 import pt.brunojesus.jogodogalo.command.winner.CheckWinnerCommand;
 import pt.brunojesus.jogodogalo.exception.ConsecutivePlayException;
-import pt.brunojesus.jogodogalo.exception.GameAlreadyFinishedException;
 import pt.brunojesus.jogodogalo.exception.IllegalBoardPositionException;
 import pt.brunojesus.jogodogalo.exception.IllegalPlayException;
 import pt.brunojesus.jogodogalo.exception.PositionAlreadyInUseException;
+import pt.brunojesus.jogodogalo.validator.play.GameAlreadyFinishedPlayValidator;
+import pt.brunojesus.jogodogalo.validator.play.PlayValidator;
 
 public class Board {
 
@@ -20,6 +23,7 @@ public class Board {
 	private BoardItemEnum lastPlayedItem = null;
 	private BoardItemEnum winner = null;
 	private List<CheckWinnerCommand> winnerCheckCommands = null;
+	private List<PlayValidator> playValidators = null;
 
 	public Board(int size) {
 		this.size = size;
@@ -31,6 +35,14 @@ public class Board {
 				new CheckDiagonalWinnerCommand(),
 				new CheckInverseDiagonalWinnerCommand()
 		);
+		
+		//TODO: adicionar validators para:
+		// - IllegalBoardPositionException
+		// - ConsecutivePlayException
+		// - PositionAlreadyInUseException
+		this.playValidators = List.of(
+				new GameAlreadyFinishedPlayValidator()
+		);
 	}
 
 	public void play(int x, int y) throws IllegalPlayException {
@@ -41,9 +53,15 @@ public class Board {
 	}
 
 	public BoardItemEnum play(int x, int y, BoardItemEnum item) throws IllegalPlayException {
-		if (winner != null) {
-			throw new GameAlreadyFinishedException("There's already a winner: " + winner.getSymbol());
+		Optional<IllegalPlayException> exception = this.playValidators.stream()
+		.map((validator) -> validator.validatePlay(x, y, item, this))
+		.filter(Objects::nonNull)
+		.findFirst();
+		
+		if (exception.isPresent()) {
+			throw exception.get();
 		}
+		
 		if (x >= this.size || y >= this.size || x < 0 || y < 0) {
 			throw new IllegalBoardPositionException("Illegal position");
 		}
@@ -83,6 +101,10 @@ public class Board {
 	
 	public BoardItemEnum getWinner() {
 		return winner;
+	}
+	
+	public BoardItemEnum getLastPlayedItem() {
+		return lastPlayedItem;
 	}
 	
 	public int getSize() {
