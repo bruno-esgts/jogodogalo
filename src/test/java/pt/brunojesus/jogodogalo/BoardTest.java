@@ -37,20 +37,10 @@ class BoardTest {
 		assertEquals(BoardItemEnum.CROSS, this.subject.getItemInPosition(2, 0));
 		assertNull(subject.getItemInPosition(1, 1));
 	}
-	
-	
+
 	static Stream<Arguments> illegalPositionsProvider() {
-		return Stream.of(
-					Arguments.of(-1, 0),
-					Arguments.of(0, -1),
-					Arguments.of(-1, -1),
-					Arguments.of(-10, -20),
-					Arguments.of(3, 0),
-					Arguments.of(0, 3),
-					Arguments.of(3,3),
-					Arguments.of(10, 0),
-					Arguments.of(2, 10)
-				);
+		return Stream.of(Arguments.of(-1, 0), Arguments.of(0, -1), Arguments.of(-1, -1), Arguments.of(-10, -20),
+				Arguments.of(3, 0), Arguments.of(0, 3), Arguments.of(3, 3), Arguments.of(10, 0), Arguments.of(2, 10));
 	}
 
 	@ParameterizedTest
@@ -74,29 +64,41 @@ class BoardTest {
 		assertThrows(IllegalBoardPositionException.class, () -> subject.play(x, y));
 
 	}
-	
+
 	static Stream<Arguments> legalPositionsProvider() {
-		return Stream.of(
-				Arguments.of(0,0),
-				Arguments.of(0,1),
-				Arguments.of(0,2),
-				Arguments.of(1,0),
-				Arguments.of(1,1),
-				Arguments.of(1,2),
-				Arguments.of(2,0),
-				Arguments.of(2,1),
-				Arguments.of(2,2)
-				);
+		return Stream.of(Arguments.of(0, 0), Arguments.of(0, 1), Arguments.of(0, 2), Arguments.of(1, 0),
+				Arguments.of(1, 1), Arguments.of(1, 2), Arguments.of(2, 0), Arguments.of(2, 1), Arguments.of(2, 2));
 	}
-	
+
 	@ParameterizedTest
 	@MethodSource("legalPositionsProvider")
 	void testPositionAlreadyInUse(int x, int y) throws IllegalPlayException {
 		subject = new Board(3);
-		
+
 		subject.play(x, y);
-		
+
 		assertThrows(PositionAlreadyInUseException.class, () -> subject.play(x, y));
 	}
+	
+	static Stream<Arguments> consecutivePlaysProvider() {
+		return Stream.of(
+					Arguments.of(0, 0, 1, 1, BoardItemEnum.CROSS),
+					Arguments.of(0, 0, 1, 1, BoardItemEnum.CIRCLE),
+					Arguments.of(0, 1, 2, 1, BoardItemEnum.CROSS),
+					Arguments.of(0, 1, 2, 1, BoardItemEnum.CIRCLE)
+				);
+	}
 
+	@ParameterizedTest
+	@MethodSource("consecutivePlaysProvider")
+	void testConsecutivePlay(int x1, int y1, int x2, int y2, BoardItemEnum item) throws IllegalPlayException {
+		subject = new Board(3);
+
+		subject.play(x1, y1, item);
+
+		assertThrows(
+				ConsecutivePlayException.class, 
+				() -> subject.play(x2, y2, item)
+		);
+	}
 }
