@@ -16,6 +16,7 @@ public class Board {
 	public void play(int x, int y) throws IllegalPlayException {
 		final BoardItemEnum item = this.lastPlayedItem == BoardItemEnum.CROSS ? 
 				BoardItemEnum.CIRCLE : BoardItemEnum.CROSS;
+		
 		play(x, y, item);
 	}
 
@@ -41,10 +42,15 @@ public class Board {
 				checkDiagonalWinner(x, y) ||
 				checkInverseDiagonalWinner(x, y)
 		) {
+			this.winner = lastPlayedItem;
 			return lastPlayedItem;
 		}
 		
 		return null;
+	}
+	
+	public BoardItemEnum getItemInPosition(int x, int y) {
+		return this.board[y][x];
 	}
 	
 	public boolean checkLineWinner(int y) {
@@ -113,6 +119,10 @@ public class Board {
 		}
 		
 		return true;
+	}
+	
+	public BoardItemEnum getWinner() {
+		return winner;
 	}
 
 	public void print() {
