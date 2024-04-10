@@ -2,6 +2,7 @@ package pt.brunojesus.jogodogalo;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -100,5 +101,65 @@ class BoardTest {
 				ConsecutivePlayException.class, 
 				() -> subject.play(x2, y2, item)
 		);
+	}
+	
+	@Test
+	void testGameAlreadyFinished() {
+		//TODO: trabalho de casa
+	}
+	
+	static Stream<Arguments> winningPlaysProvider() {
+		return Stream.of(
+					// Horizontal
+					Arguments.of(List.of(
+							Play.of(1,1), //X
+							Play.of(0,0), //O
+							Play.of(0,1), //X
+							Play.of(1,0), //O
+							Play.of(2,1) //X
+					)),
+					// Vertical
+					Arguments.of(List.of(
+							Play.of(0, 0), // X
+							Play.of(2, 2), // O
+							Play.of(0, 1), // X
+							Play.of(1, 1), // O
+							Play.of(0, 2) // X
+					)),
+					// Diagonal
+					Arguments.of(List.of(
+							Play.of(1, 1), // X
+							Play.of(2, 0), // O
+							Play.of(0, 0), // X
+							Play.of(2, 1), // O
+							Play.of(2, 2) // X
+					)),
+					//Inverse Diagonal
+					Arguments.of(List.of(
+							Play.of(2, 0), // X
+							Play.of(0, 0), // O
+							Play.of(1, 1), // X
+							Play.of(2, 2), // O
+							Play.of(0, 2) // X
+					))
+				);
+	}
+	
+	
+	@ParameterizedTest
+	@MethodSource("winningPlaysProvider")
+	void testWinner(List<Play> plays) throws IllegalPlayException {
+		Board board = new Board(3);
+		
+		assertNull(board.getWinner());
+		
+		for (int i = 0; i < plays.size(); i++) {
+			Play play = plays.get(i);
+			board.play(play.getX(), play.getY());
+		}
+		System.out.println();
+		board.print();
+		
+		assertNotNull(board.getWinner());
 	}
 }

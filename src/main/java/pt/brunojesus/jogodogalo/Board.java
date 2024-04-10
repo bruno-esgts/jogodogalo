@@ -42,6 +42,7 @@ public class Board {
 				checkDiagonalWinner(x, y) ||
 				checkInverseDiagonalWinner(x, y)
 		) {
+			this.winner = lastPlayedItem;
 			return lastPlayedItem;
 		}
 		
@@ -118,6 +119,10 @@ public class Board {
 		}
 		
 		return true;
+	}
+	
+	public BoardItemEnum getWinner() {
+		return winner;
 	}
 
 	public void print() {
