@@ -9,7 +9,8 @@ public class BoardPositionValidator implements PlayValidator {
 
 	@Override
 	public IllegalPlayException validatePlay(int x, int y, BoardItemEnum item, Board board) {
-		if (x >= board.getSize() || y >= board.getSize() || x < 0 || y < 0) {
+		int size = board.getSize();
+		if (x >= size || y >= size || x < 0 || y < 0) {
 			return new IllegalBoardPositionException("Illegal position");
 		}
 		
