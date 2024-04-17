@@ -9,12 +9,12 @@ import pt.brunojesus.jogodogalo.command.winner.CheckDiagonalWinnerCommand;
 import pt.brunojesus.jogodogalo.command.winner.CheckInverseDiagonalWinnerCommand;
 import pt.brunojesus.jogodogalo.command.winner.CheckLineWinnerCommand;
 import pt.brunojesus.jogodogalo.command.winner.CheckWinnerCommand;
-import pt.brunojesus.jogodogalo.exception.ConsecutivePlayException;
-import pt.brunojesus.jogodogalo.exception.IllegalBoardPositionException;
 import pt.brunojesus.jogodogalo.exception.IllegalPlayException;
-import pt.brunojesus.jogodogalo.exception.PositionAlreadyInUseException;
+import pt.brunojesus.jogodogalo.validator.play.BoardPositionValidator;
+import pt.brunojesus.jogodogalo.validator.play.ConsecutivePlayValidator;
 import pt.brunojesus.jogodogalo.validator.play.GameAlreadyFinishedPlayValidator;
 import pt.brunojesus.jogodogalo.validator.play.PlayValidator;
+import pt.brunojesus.jogodogalo.validator.play.PositionInUseValidator;
 
 public class Board {
 
@@ -36,12 +36,11 @@ public class Board {
 				new CheckInverseDiagonalWinnerCommand()
 		);
 		
-		//TODO: adicionar validators para:
-		// - IllegalBoardPositionException
-		// - ConsecutivePlayException
-		// - PositionAlreadyInUseException
 		this.playValidators = List.of(
-				new GameAlreadyFinishedPlayValidator()
+				new GameAlreadyFinishedPlayValidator(),
+				new BoardPositionValidator(),
+				new ConsecutivePlayValidator(),
+				new PositionInUseValidator()
 		);
 	}
 
@@ -61,16 +60,7 @@ public class Board {
 		if (exception.isPresent()) {
 			throw exception.get();
 		}
-		
-		if (x >= this.size || y >= this.size || x < 0 || y < 0) {
-			throw new IllegalBoardPositionException("Illegal position");
-		}
-		if (this.lastPlayedItem == item) {
-			throw new ConsecutivePlayException("Cannot play two times in a row");
-		}
-		if (this.board[y][x] != null) {
-			throw new PositionAlreadyInUseException("This place already has an item");
-		}
+
 		this.board[y][x] = item;
 		this.lastPlayedItem = item;
 		
