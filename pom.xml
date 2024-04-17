@@ -6,7 +6,20 @@
 	<artifactId>jogodogalo</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
+	<distributionManagement>
+	    <repository>
+	        <id>mvn-brunojesus</id>
+	        <name>Bruno Jesus MVN Repo</name>
+	        <url>https://mvn.brunojesus.pt/releases</url>
+	    </repository>
+	</distributionManagement>
+
 	<dependencies>
+	    <dependency>
+	        <groupId>pt.brunojesus.jogodogalo</groupId>
+	        <artifactId>gui</artifactId>
+	        <version>0.0.1</version>
+	    </dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter</artifactId>
