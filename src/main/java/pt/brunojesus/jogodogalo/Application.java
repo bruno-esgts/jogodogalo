@@ -1,5 +1,7 @@
 package pt.brunojesus.jogodogalo;
 
+import pt.brunojesus.jogodogalo.exception.IllegalPlayException;
+
 public class Application {
 
 	public static void main(String[] args) throws IllegalPlayException {
@@ -12,6 +14,7 @@ public class Application {
 		winner = board.play(0, 2, BoardItemEnum.CROSS);
 		winner = board.play(0, 0, BoardItemEnum.CIRCLE);
 		winner = board.play(1, 1, BoardItemEnum.CROSS);
+		winner = board.play(2, 2, BoardItemEnum.CIRCLE);
 		
 		if (winner != null) {
 			System.out.println("Winner is: " + winner.getSymbol());

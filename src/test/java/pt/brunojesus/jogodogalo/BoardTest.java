@@ -10,6 +10,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import pt.brunojesus.jogodogalo.exception.ConsecutivePlayException;
+import pt.brunojesus.jogodogalo.exception.GameAlreadyFinishedException;
+import pt.brunojesus.jogodogalo.exception.IllegalBoardPositionException;
+import pt.brunojesus.jogodogalo.exception.IllegalPlayException;
+import pt.brunojesus.jogodogalo.exception.PositionAlreadyInUseException;
+import pt.brunojesus.jogodogalo.validator.play.PlayValidator;
+
 class BoardTest {
 
 	private Board subject;
@@ -104,8 +111,21 @@ class BoardTest {
 	}
 	
 	@Test
-	void testGameAlreadyFinished() {
-		//TODO: trabalho de casa
+	void testGameAlreadyFinished() throws IllegalPlayException {
+		PlayValidator dummyPlayValidator = new PlayValidator() {
+			@Override
+			public IllegalPlayException validatePlay(int x, int y, BoardItemEnum item, Board board) {
+				return new GameAlreadyFinishedException("Dummy exception");
+			}
+		};
+		
+		Board board = new Board(3, null, List.of(dummyPlayValidator));
+
+		board.print();
+		
+		assertThrows(GameAlreadyFinishedException.class,
+				() -> board.play(2, 2)
+		);
 	}
 	
 	static Stream<Arguments> winningPlaysProvider() {

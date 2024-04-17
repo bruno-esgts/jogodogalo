@@ -1,5 +1,20 @@
 package pt.brunojesus.jogodogalo;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import pt.brunojesus.jogodogalo.command.winner.CheckColumnWinnerCommand;
+import pt.brunojesus.jogodogalo.command.winner.CheckDiagonalWinnerCommand;
+import pt.brunojesus.jogodogalo.command.winner.CheckInverseDiagonalWinnerCommand;
+import pt.brunojesus.jogodogalo.command.winner.CheckLineWinnerCommand;
+import pt.brunojesus.jogodogalo.command.winner.CheckWinnerCommand;
+import pt.brunojesus.jogodogalo.exception.IllegalPlayException;
+import pt.brunojesus.jogodogalo.validator.play.BoardPositionValidator;
+import pt.brunojesus.jogodogalo.validator.play.ConsecutivePlayValidator;
+import pt.brunojesus.jogodogalo.validator.play.GameAlreadyFinishedPlayValidator;
+import pt.brunojesus.jogodogalo.validator.play.PlayValidator;
+import pt.brunojesus.jogodogalo.validator.play.PositionInUseValidator;
 
 public class Board {
 
@@ -7,10 +22,36 @@ public class Board {
 	private Integer size;
 	private BoardItemEnum lastPlayedItem = null;
 	private BoardItemEnum winner = null;
+	private List<CheckWinnerCommand> winnerCheckCommands = null;
+	private List<PlayValidator> playValidators = null;
 
 	public Board(int size) {
+		this(
+				size,
+				List.of(
+						new CheckLineWinnerCommand(),
+						new CheckColumnWinnerCommand(),
+						new CheckDiagonalWinnerCommand(),
+						new CheckInverseDiagonalWinnerCommand()
+				), 
+				List.of(
+						new GameAlreadyFinishedPlayValidator(),
+						new BoardPositionValidator(),
+						new ConsecutivePlayValidator(),
+						new PositionInUseValidator()
+				)
+		);
+	}
+	
+	public Board(
+			int size, 
+			List<CheckWinnerCommand> winnerCheckCommands,
+			List<PlayValidator> playValidators) {
+		
 		this.size = size;
 		this.board = new BoardItemEnum[size][size];
+		this.winnerCheckCommands = winnerCheckCommands;
+		this.playValidators = playValidators;
 	}
 
 	public void play(int x, int y) throws IllegalPlayException {
@@ -21,108 +62,53 @@ public class Board {
 	}
 
 	public BoardItemEnum play(int x, int y, BoardItemEnum item) throws IllegalPlayException {
-		if (winner != null) {
-			throw new GameAlreadyFinishedException("There's already a winner: " + winner.getSymbol());
+		Optional<IllegalPlayException> exception = this.playValidators.stream()
+		.map((validator) -> validator.validatePlay(x, y, item, this))
+		.filter(Objects::nonNull)
+		.findFirst();
+		
+		if (exception.isPresent()) {
+			throw exception.get();
 		}
-		if (x >= this.size || y >= this.size || x < 0 || y < 0) {
-			throw new IllegalBoardPositionException("Illegal position");
-		}
-		if (this.lastPlayedItem == item) {
-			throw new ConsecutivePlayException("Cannot play two times in a row");
-		}
-		if (this.board[y][x] != null) {
-			throw new PositionAlreadyInUseException("This place already has an item");
-		}
+
 		this.board[y][x] = item;
 		this.lastPlayedItem = item;
 		
-		if (
-				checkLineWinner(y) ||
-				checkColumnWinner(x) ||
-				checkDiagonalWinner(x, y) ||
-				checkInverseDiagonalWinner(x, y)
-		) {
+		boolean hasWinner = this.winnerCheckCommands.stream()
+			.map((command) -> command.check(x, y, this))
+			.filter((result) -> result == true)
+			.findFirst().isPresent();
+		if (hasWinner) {
 			this.winner = lastPlayedItem;
-			return lastPlayedItem;
 		}
+
+//		Alternativa em Java 7
+//		for (int i = 0; i < this.winnerCheckCommands.size(); i++) {
+//			boolean hasWinner = this.winnerCheckCommands.get(i).check(x, y, this);
+//			if (hasWinner) {
+//				this.winner = lastPlayedItem;
+//				break;
+//			}
+//		}
 		
-		return null;
+
+		return this.winner;
 	}
 	
 	public BoardItemEnum getItemInPosition(int x, int y) {
 		return this.board[y][x];
 	}
 	
-	public boolean checkLineWinner(int y) {
-		BoardItemEnum item = this.board[y][0];
-		if (item == null) {
-			return false;
-		}
-		
-		for (int i = 1; i < this.size; i++) {
-			if (this.board[y][i] != item) {
-				return false;
-			}
-		}
-				
-		return true;
-	}
-	
-	public boolean checkColumnWinner(int x) {
-		BoardItemEnum item = this.board[0][x];
-		if (item == null) {
-			return false;
-		}
-		
-		for (int i = 1; i < this.size; i++) {
-			if (this.board[i][x] != item) {
-				return false;
-			}
-		}
-		
-		return true;
-	}
-	
-	public boolean checkDiagonalWinner(int x, int y) {
-		if (x != y) {
-			return false;
-		}
-
-		BoardItemEnum item = this.board[0][0];
-		if (item == null) {
-			return false;
-		}
-		
-		for (int i = 1; i < this.size; i++) {
-			if (this.board[i][i] != item) {
-				return false;
-			}
-		}
-		
-		return true;
-	}
-	
-	public boolean checkInverseDiagonalWinner(int x, int y) {
-		if (x + y != this.size - 1) {
-			return false;
-		}
-		
-		BoardItemEnum item = this.board[0][this.size -1];
-		if (item == null) {
-			return false;
-		}
-		
-		for (int i = 1; i < this.size; i++) {
-			if (this.board[i][this.size - 1 - i] != item) {
-				return false;
-			}
-		}
-		
-		return true;
-	}
-	
 	public BoardItemEnum getWinner() {
 		return winner;
+	}
+	
+	public BoardItemEnum getLastPlayedItem() {
+		return lastPlayedItem;
+	}
+	
+	public int getSize() {
+		return size;
 	}
 
 	public void print() {
