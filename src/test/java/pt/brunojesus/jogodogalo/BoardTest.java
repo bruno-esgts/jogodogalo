@@ -11,6 +11,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import pt.brunojesus.jogodogalo.exception.ConsecutivePlayException;
+import pt.brunojesus.jogodogalo.exception.GameAlreadyFinishedException;
 import pt.brunojesus.jogodogalo.exception.IllegalBoardPositionException;
 import pt.brunojesus.jogodogalo.exception.IllegalPlayException;
 import pt.brunojesus.jogodogalo.exception.PositionAlreadyInUseException;
@@ -109,8 +110,19 @@ class BoardTest {
 	}
 	
 	@Test
-	void testGameAlreadyFinished() {
-		//TODO: trabalho de casa
+	void testGameAlreadyFinished() throws IllegalPlayException {
+		Board board = new Board(3);
+		board.play(0, 0); // X
+		board.play(1, 0); // O
+		board.play(0, 1); // X
+		board.play(1, 1); // O
+		board.play(0, 2); // X
+		
+		board.print();
+		
+		assertThrows(GameAlreadyFinishedException.class,
+				() -> board.play(2, 2)
+		);
 	}
 	
 	static Stream<Arguments> winningPlaysProvider() {
