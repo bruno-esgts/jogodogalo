@@ -26,22 +26,32 @@ public class Board {
 	private List<PlayValidator> playValidators = null;
 
 	public Board(int size) {
+		this(
+				size,
+				List.of(
+						new CheckLineWinnerCommand(),
+						new CheckColumnWinnerCommand(),
+						new CheckDiagonalWinnerCommand(),
+						new CheckInverseDiagonalWinnerCommand()
+				), 
+				List.of(
+						new GameAlreadyFinishedPlayValidator(),
+						new BoardPositionValidator(),
+						new ConsecutivePlayValidator(),
+						new PositionInUseValidator()
+				)
+		);
+	}
+	
+	public Board(
+			int size, 
+			List<CheckWinnerCommand> winnerCheckCommands,
+			List<PlayValidator> playValidators) {
+		
 		this.size = size;
 		this.board = new BoardItemEnum[size][size];
-		
-		this.winnerCheckCommands = List.of(
-				new CheckLineWinnerCommand(),
-				new CheckColumnWinnerCommand(),
-				new CheckDiagonalWinnerCommand(),
-				new CheckInverseDiagonalWinnerCommand()
-		);
-		
-		this.playValidators = List.of(
-				new GameAlreadyFinishedPlayValidator(),
-				new BoardPositionValidator(),
-				new ConsecutivePlayValidator(),
-				new PositionInUseValidator()
-		);
+		this.winnerCheckCommands = winnerCheckCommands;
+		this.playValidators = playValidators;
 	}
 
 	public void play(int x, int y) throws IllegalPlayException {
