@@ -15,6 +15,7 @@ import pt.brunojesus.jogodogalo.exception.GameAlreadyFinishedException;
 import pt.brunojesus.jogodogalo.exception.IllegalBoardPositionException;
 import pt.brunojesus.jogodogalo.exception.IllegalPlayException;
 import pt.brunojesus.jogodogalo.exception.PositionAlreadyInUseException;
+import pt.brunojesus.jogodogalo.validator.play.PlayValidator;
 
 class BoardTest {
 
@@ -111,13 +112,15 @@ class BoardTest {
 	
 	@Test
 	void testGameAlreadyFinished() throws IllegalPlayException {
-		Board board = new Board(3);
-		board.play(0, 0); // X
-		board.play(1, 0); // O
-		board.play(0, 1); // X
-		board.play(1, 1); // O
-		board.play(0, 2); // X
+		PlayValidator dummyPlayValidator = new PlayValidator() {
+			@Override
+			public IllegalPlayException validatePlay(int x, int y, BoardItemEnum item, Board board) {
+				return new GameAlreadyFinishedException("Dummy exception");
+			}
+		};
 		
+		Board board = new Board(3, null, List.of(dummyPlayValidator));
+
 		board.print();
 		
 		assertThrows(GameAlreadyFinishedException.class,
