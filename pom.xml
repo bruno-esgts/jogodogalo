@@ -6,13 +6,13 @@
 	<artifactId>jogodogalo</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
-	<distributionManagement>
+	<repositories>
 	    <repository>
 	        <id>mvn-brunojesus</id>
 	        <name>Bruno Jesus MVN Repo</name>
 	        <url>https://mvn.brunojesus.pt/releases</url>
 	    </repository>
-	</distributionManagement>
+	</repositories>
 
 	<dependencies>
 	    <dependency>
